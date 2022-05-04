@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <script>
+
+      var suggestedRes;
+
+      function showThumbnail(url) {
+        let div = document.getElementById('thumbnail');
+        // div.innerHTML = url;
+        div.innerHTML = "<image src='"+url+"' atl='pageThumbnail'/>";
+
+      }
+      // function showData(arr) {
+      //   var checkedText = arr[0];
+      //   var checkedImg = arr[1];
+      //   var div = document.getElementById('selectedElements');
+      //   div.innerHTML = checkedText;
+
+      // }
+
+      function saveData(res) {
+        suggestedRes = res;
+        var divToShow = document.getElementById('afterLoading');
+        var divToHide = document.getElementById('loading');
+        divToHide.style.display = "none";
+        divToShow.style.display = "block";
+
+        showResForQuestions();
+      }
+
+      function showResForQuestions() {
+        var questionType = document.querySelector("input[class='questionType']:checked").value;
+        questionType += "Div";
+        var questionTypesArr = ['originalDiv', 'trueFalseDiv', 'blankDiv', 'multipleDiv', 'shortDiv'];
+        for (var type of questionTypesArr) {
+          var current = document.getElementById(`${type}`)
+          var display = current.style.display
+          if (type !== questionType) {
+            current.style.display = 'none';
+          }
+          else {
+            current.style.display = 'block';
+          }
+        }
+        var divToChange = document.getElementById('mainQuestion');
+        switch (questionType) {
+          case 'originalDiv':
+            var div = document.getElementById('textarea');
+            div.value = suggestedRes['text'];
+            break;
+          case 'trueFalseDiv':
+            var div = document.getElementById('trueFalseQ');
+            div.value = suggestedRes['text'];
+            break;
+          case 'blankDiv':
+            console.log("b");
+            break;
+          case 'multipleDiv':
+            console.log("m");
+            break;          
+          case 'shortDiv':
+            console.log("s");
+            break;          
+        }
+
+
+        console.log(questionType);
+      }
+
+      function toggleTrueFalse() {
+        var toggle = document.getElementById("trueFalseCheckbox");
+        var questionDiv = document.getElementById("trueFalseQ");
+        var answerDiv = document.getElementById("answer");
+        if (toggle.checked) {
+          questionDiv.value = suggestedRes['text']; 
+          answerDiv.innerHTML = "True";
+        } else {
+          if (suggestedRes['false_sentences'].length !== 0) {
+            questionDiv.value = suggestedRes['false_sentences'][0]; 
+          } else {
+            questionDiv.value = ""; 
+          }
+          answerDiv.innerHTML = "False";
+        }
+        display(questionDiv);
+      }
+
+      function showTrueFalseOptions() {
+        var trueFalseModal = document.getElementById('trueFalseModal');
+        trueFalseModal.style.display = 'block';
+        var toggle = document.getElementById("trueFalseCheckbox");
+        var modalToggle = document.getElementById("modalTrueFalseCheckbox");
+        var form = document.getElementById("trueFalseOptions");
+        if (toggle.checked) {
+          modalToggle.checked = true;
+          form.innerHTML = `<input type="radio" class="statements" name="statements" value="${suggestedRes['text']}" checked>
+      <label for="${suggestedRes['text']}">${suggestedRes['text']}</label><br><input type="radio" class="statements" name="statements"><br>`;
+
+
+        } else {
+          modalToggle.checked = false;
+          form.innerHTML = "";
+          for (var i = 0; i < suggestedRes['false_sentences'].length; i++) {
+            form.innerHTML += `<input type="radio" class="statements" name="statements" value="${suggestedRes['false_sentences'][i]}">
+      <label for="${suggestedRes['false_sentences'][i]}">${suggestedRes['false_sentences'][i]}</label><br>`;
+          }
+        }
+
+      }
+
+      function showData() {
+        
+        var divToShow = document.getElementById('afterLoading');
+        var divToHide = document.getElementById('loading');
+        divToHide.style.display = "none";
+        divToShow.style.display = "block";
+        var checkedText = res["text"];
+        // var checkedImg = arr[1];
+        var div = document.getElementById('textarea');
+        div.value = checkedText;
+        display();
+      }
+
+      function display(curr) {
+        var previewArea = document.getElementById('preview');
+        var value = curr.value;
+        previewArea.innerHTML = value;
+      }
+
+      function insert() {
+        var value = document.getElementById('textarea').value;
+        google.script.run.withSuccessHandler()
+        .insertToDoc(value);
+        // var doc = DocumentApp.getActiveDocument();
+        // var body = doc.getBody();
+        // body.appendParagraph(value);
+        google.script.host.close();
+      }
+
+      function generateQuestion() {
+        google.script.run.withSuccessHandler()
+          .showDialogSmall();
+      }
+
+
+
+
+      google.script.run.withSuccessHandler(saveData)
+        .getCheckedData();
+      
+
+
+    </script>
+  </head>
+
+  <body>
+    <div id="loading">Loading...</div>
+    <div style="display:none;" id="afterLoading">
+
+
+    <form>
+      <input type="radio" id="original" class="questionType" name="questionType" value="original" onclick="showResForQuestions()" checked>
+      <label for="original">Original</label><br>
+      <input type="radio" id="trueFalse" class="questionType" name="questionType" value="trueFalse" onclick="showResForQuestions()">
+      <label for="trueFalse">True/False</label><br>
+      <input type="radio" id="blank" class="questionType" name="questionType" value="blank" onclick="showResForQuestions()">
+      <label for="blank">Fill-in-The Blanck</label><br>
+      <input type="radio" id="multiple" class="questionType" name="questionType" value="multiple" onclick="showResForQuestions()">
+      <label for="multiple">Multiple Choice</label>
+      <input type="radio" id="short" class="questionType" name="questionType" value="short" onclick="showResForQuestions()">
+      <label for="short">Short Answer</label>
+    </form>
+    <div id="selectedElements"></div>
+
+    <div id="mainQuestion">
+      <div id="originalDiv"> 
+        <div>You selected the original content source below to make a question. To add the content in its plain form, click "add." To make it into another question type, click an option on the left.</div>
+        <div>source content</div>
+        <input type="text" id="textarea" onkeypress="display(this)" size="10">
+        <div>Doesn't look right? To return to the sidebar and select other source content, click on the "x".</div>
+      </div>
+
+      <div id="trueFalseDiv">
+        <div>To change the statement, toggle between true and false or edit it yourself. To see more options MateriaALL generated, click "other statement options".</div>
+        <div>statement</div>
+        <div style="text-decoration: underline;" onClick="showTrueFalseOptions()">other statement options</div>
+        <input type="text" id="trueFalseQ" onkeypress="display(this)" size="10">
+        <div>answer</div>
+        <div class="container">
+          <label class="switch" for="trueFalseCheckbox">
+            <input type="checkbox" id="trueFalseCheckbox" onchange="toggleTrueFalse()" checked/>
+            <div class="slider round"></div>
+          </label>
+        </div>
+        <div id="answer">True</div>
+      </div>
+
+      <div id="blankDiv">
+        <div>blanck</div>
+      </div>
+
+      <div id="multipleDiv">
+        <div>multiple</div>
+      </div>
+
+      <div id="shortDiv">
+        <div>short</div>
+      </div>
+
+    </div>
+
+    <div>
+      <div id="trueFalseModal" style="display: none;">
+        <div class="container">
+          <label class="switch" for="modalTrueFalseCheckbox">
+            <input type="checkbox" id="modalTrueFalseCheckbox" onchange="toggleTrueFalse()" checked/>
+            <div class="slider round"></div>
+          </label>
+        </div>
+        <form id="trueFalseOptions">
+          <!-- <input type="text" id="trueFaseQuestionEdit"> -->
+        </form>
+
+      </div>
+
+    </div>
+            
+
+    <!-- <div class="info" >
+    <span id="ID" name="ID"><?=id?></span>
+</div> -->
+    <!-- <div><?=checkedText?></div>
+    <div><?=checkedImgUrl?></div> -->
+    
+    <div>Worksheet Preview</div>
+    <div id="preview"></div>
+    <!-- <div id="thumbnail"></div> -->
+    <input type="button" value="insert" onclick="insert()"/>
+    <input type="button" value="Close" onclick="google.script.host.close()" />
+
+  </div>
+  </body>
+</html>

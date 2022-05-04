@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<!-- this page is for getting the slide url -->
+<html>
+
+<head>
+  <base target="_top">
+
+  <script>
+
+    // function fetchSlide() {
+    //   let slideId = document.getElementById("slideId").value;
+    //   google.script.run.withSuccessHandler()
+    //       .fetchSlide(slideId);
+    //   google.script.run.withSuccessHandler(onSuccess)
+    //       .parseElements();
+    // }
+
+    // function onSuccess(page) {
+    //   // console.log(page);
+    //     var div = document.getElementById('output');
+    //     div.innerHTML = 'You have ' + page
+    //         + ' in the slide.';
+
+    //     var form = document.getElementById('pageForm');
+    //     if (form.style.display === "none") {
+    //       form.style.display = "block";
+    //     } 
+    // }
+
+    function changePage(page) {
+      console.log("changePage")
+      document.open();
+      document.write(page);
+      document.close();
+    }
+
+    function toLoading(res) {
+      console.log("toLoading")
+      google.script.run.withSuccessHandler(changePage).newPage('loading');
+    }
+
+    function showError(msg, element) {
+      alert(msg)
+    }
+
+    // passing the url to gs, and direct to loading page
+    function saveUrl() {
+      console.log("saveURL")
+      let slideUrl = document.getElementById("slideId").value;
+      console.log(typeof(slideUrl));
+      google.script.run.withSuccessHandler(toLoading)
+            .withFailureHandler(showError).saveSlideID(slideUrl);
+     
+
+    }
+
+    function test() {  
+      google.script.run.withSuccessHandler().showDialog();
+
+    }
+
+  </script>
+</head>
+
+
+<body>
+  <!-- <button onclick="test()">Test</button> -->
+  <h1>Hello!</h1>
+  <div>Enter the source URL of your Google slide deck below.</div>
+  <form>
+      <div>source URL</div>
+      <input type="text" name="slideID" id="slideId">
+      <button class="blue" id="fetch-slide" onclick="saveUrl()">enter</button>
+      
+  </form>
+
+
+
+</body>
+</html>

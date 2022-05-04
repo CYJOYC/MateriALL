@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <base target="_top">
+    <script>
+
+      function changePage(page) {
+        document.open();
+        document.write(page);
+        document.close();
+      }
+
+      function afterParsing() {
+        google.script.run.withSuccessHandler(changePage).newPage('main');
+      }
+
+      google.script.run.withSuccessHandler(afterParsing).saveAndGetSlide();
+
+    </script> 
+  </head>
+
+
+  <body>
+    <div>Loading...</div>
+  </body>
+
+</html>

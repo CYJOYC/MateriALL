@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+
+  <script>
+    function getPageContent() {
+      let slidePage = document.getElementById("pageNumber").value;
+      console.log(slidePage);
+      console.log("check")
+      google.script.run.withSuccessHandler(displayContent)
+          .getPageTextAndImg(parseInt(slidePage));
+      // google.script.run.withSuccessHandler()
+      //     .showDialog(slidePage);
+    }
+
+    function displayContent(pageDetails) {
+      console.log(pageDetails)
+      let thumbnailDiv = document.getElementById('thumbnail');
+      thumbnailDiv.innerHTML = "<image src='"+pageDetails[0]+"' atl='pageThumbnail'/>";
+      let textOptionsDiv = document.getElementById('textOptions');
+      var currTextOptions = "";
+      pageDetails[1].forEach((e, i) => {
+        if (e !== "\n" && e !== "\u000b" && e !== " ") {
+          currTextOptions += `<input type="checkbox" class="textOption" id="text-${i}" name="text-${i}" value="${e}">
+        <label for="text-${i}">${e}</label><br>`;
+        }
+      })
+      var currImgOptions = "";
+      pageDetails[2].forEach((e, i) => {
+        currImgOptions += `<input type="checkbox" class="imgOption" id="img-${i}" name="img-${i}" value="${e}">
+        <label for="img-${i}"><img src="${e}" width="200"/></label><br>`
+      })
+      textOptionsDiv.innerHTML = currTextOptions;
+      textOptionsDiv.innerHTML += currImgOptions;
+      textOptionsDiv.innerHTML += `<button class="blue" id="create-question" onclick="saveCheckedItems()">Create</button>`
+    }
+
+    function updatePageNumber(action) {
+      var pageInput = document.getElementById("pageNumber");
+      var pageNumber = parseInt(pageInput.value);
+      console.log(pageNumber)
+      if (action === "next") {
+        pageInput.value = pageNumber + 1;
+      } else {
+        pageInput.value = pageNumber - 1;
+      }
+      getPageContent();
+    }
+
+    function displayTotal(total) {
+      var pageInput = document.getElementById("totalPages");
+      pageInput.innerHTML = parseInt(total);
+    }
+
+    function changePage(page) {
+      document.open();
+      document.write(page);
+      document.close();
+    }
+
+    function saveCheckedItems() {
+      var checkedTextArr = Array.from(document.querySelectorAll("input[class='textOption']:checked")).map((elem) => elem.value);
+      var checkedText = checkedTextArr.join(" ").toLowerCase();
+      var checkedImgUrl = Array.from(document.querySelectorAll("input[class='imgOption']:checked")).map((elem) => elem.value);
+      
+      google.script.run.withSuccessHandler(showModal)
+          .saveClickedElements(checkedText, checkedImgUrl);
+    }
+
+    function showModal() {
+      google.script.run.withSuccessHandler()
+        .showDialog();
+    }
+
+    google.script.run.withSuccessHandler(displayContent)
+          .getPageTextAndImg(1);
+    
+    google.script.run.withSuccessHandler(displayTotal)
+          .getTotalPages();
+
+
+  </script>
+
+  </head>
+
+  <body>
+    <div id="output"></div>
+
+    <!-- <div id="pageForm" style="display:none;"> -->
+
+    <div id="thumbnail"></div>
+    <!-- <input type="radio" name="addressType" value="Domestic" onchange="GetNumber(this.value)"> -->
+    <button type="button" onClick="updatePageNumber('prev')">Prev</button>
+    <input id="pageNumber" onkeypress="getPageContent()" value="1">
+    <div id="totalPages"></div>
+    <button type="button" onClick="updatePageNumber('next')">Next</button>
+    
+
+    <!-- <form> -->
+      <!-- <div>Please enter the page of the slide to create content</div> -->
+      
+      <!-- <input type='text' name='slidePage' id='slidePage' > -->
+      <!-- <button class="blue" type="button" id="get-page-content" onclick="getPageContent()">Create Page</button> -->
+    <!-- </form> -->
+
+
+    <!-- </div> -->
+    
+    <!-- <button class="blue" id="getPageContent" onclick="getPageContent()">Create Page</button> -->
+    <form id='textOptions'></form>
+  </body>
+</html>
