@@ -2,7 +2,9 @@
 <html>
   <head>
     <base target="_top">
-
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://fonts.sandbox.google.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+    <?!= include('stylesheet'); ?>
   <script>
     function getPageContent() {
       let slidePage = document.getElementById("pageNumber").value;
@@ -33,7 +35,7 @@
       })
       textOptionsDiv.innerHTML = currTextOptions;
       textOptionsDiv.innerHTML += currImgOptions;
-      textOptionsDiv.innerHTML += `<button class="blue" id="create-question" onclick="saveCheckedItems()">Create</button>`
+      textOptionsDiv.innerHTML += `<button class="btn btn-green" id="create-question" onclick="saveCheckedItems()">generate</button>`
     }
 
     function updatePageNumber(action) {
@@ -84,17 +86,28 @@
 
   </head>
 
-  <body>
+  <body class="main">
     <div id="output"></div>
 
     <!-- <div id="pageForm" style="display:none;"> -->
-
-    <div id="thumbnail"></div>
-    <!-- <input type="radio" name="addressType" value="Domestic" onchange="GetNumber(this.value)"> -->
-    <button type="button" onClick="updatePageNumber('prev')">Prev</button>
-    <input id="pageNumber" onkeypress="getPageContent()" value="1">
-    <div id="totalPages"></div>
-    <button type="button" onClick="updatePageNumber('next')">Next</button>
+    <div class="source-thumbnails">
+      <div class="change-source">
+        <!-- @Joy the line below should go back to landing.html -->
+        <a>change source</a> 
+      </div>
+      <div class="thumbnails">
+        <button class="material-icons" type="button" onClick="updatePageNumber('prev')">arrow_left</button>
+        <span id="thumbnail"></span>
+        <!-- <input type="radio" name="addressType" value="Domestic" onchange="GetNumber(this.value)"> -->
+        <button class="material-icons" type="button" onClick="updatePageNumber('next')">arrow_right</button>
+      </div>
+      <div class="page-input">
+        <span>slide </span>
+        <input id="pageNumber" onkeypress="getPageContent()" value="1">
+        <span> of </span>
+        <span id="totalPages"></span>
+      </div>
+    </div>
     
 
     <!-- <form> -->
@@ -108,6 +121,30 @@
     <!-- </div> -->
     
     <!-- <button class="blue" id="getPageContent" onclick="getPageContent()">Create Page</button> -->
-    <form id='textOptions'></form>
+    <div class="detected-content-container">
+      <div class="detected-content">
+        <div>
+          <h1>Detected Source Content</h1>
+          <div class="tooltip">
+            <span class="material-symbols-outlined">info</span>
+            <div class="tooltiptext">MateriALL is only able to detect text boxes and images.</div>
+          </i>
+          </div>
+        </div>
+        <div class="detected-description">
+          <p> Below are the source content that MateriALL detected based on the slide above.</p>
+        </div>
+        <form id="textOptions"></form>
+
+        <!-- @Joy this is a placeholder, until you add the XX -->
+        <div class="subtext">You’ve selected XX pieces of source content to generate components with.</div>
+
+        <!-- @Joy this needs to be disabled if there are nothing to convert-->
+        <button class="btn btn-orange" type="button">convert to material!</button>
+
+        <!-- @Joy this is a placeholder, until you add the XX -->
+        <div class="subtext">You’ve added XX worksheet questions.</div>
+      </div>
+    </div>
   </body>
 </html>

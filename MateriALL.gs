@@ -12,9 +12,15 @@ function onInstall(e) {
 
 // open the sidebar
 function showSidebar() {
-  const ui = HtmlService.createHtmlOutputFromFile('landing')
-      .setTitle('MateriALL');
+  const template = HtmlService.createTemplateFromFile('landing');
+  const ui = template.evaluate().setTitle('MateriALL');
   DocumentApp.getUi().showSidebar(ui);
+}
+
+// include file
+function include(filename) {
+  return HtmlService.createHtmlOutputFromFile(filename)
+      .getContent();
 }
 
 // setting this for storing global variables
@@ -24,7 +30,7 @@ var userProperties = PropertiesService.getDocumentProperties();
 
 // get new page content to generate
 function newPage(page) {
-  return HtmlService.createHtmlOutputFromFile(page).getContent()
+  return HtmlService.createTemplateFromFile(page).evaluate().getContent();
 }
 
 
@@ -311,5 +317,3 @@ function insertToDoc(value) {
   body.appendParagraph(value);
 
 }
-
-
