@@ -1,0 +1,286 @@
+<style>
+
+  :root {
+    --brand-green: #A3C088;
+    --brand-dark-green: #26401C;
+    --brand-mint: #74D3AE;
+    --brand-orange: #D57762;
+    --white: #ffffff;
+  }
+  
+  body {
+    font-family: Gotham Rounded, sans-serif;
+  }
+  
+  /* /////////////// */
+  /* GLOBAL STYLES */
+  /* /////////////// */
+
+  .btn {
+    border-radius: 6px;
+    font-family: Gotham Rounded, sans-serif;
+    border: none;
+  }
+  
+  .btn:disabled {
+    text-decoration: line-through;
+    background: rgba(213, 119, 98, 0.5);
+  }
+  
+  .btn:hover {
+    box-shadow: 0px 5px 5px darkgrey;
+    cursor: pointer;
+  }
+  
+  .btn-green {
+    background-color: var(--brand-dark-green);
+    color: var(--white);
+    font-size: 13px;
+    font-weight: bold;
+    padding: 5px 15px;
+  }
+  
+  .btn-orange {
+    background-color: var(--brand-orange);
+    color: var(--white);
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px 45px;
+  }
+  
+  .form-group label {
+    font-size: 11px;
+    font-weight: 500;
+    display: block;
+  }
+  
+  .form-group input {
+    width: 100%;
+    font-family: Gotham Rounded, sans-serif;
+  }
+  
+  /* Tooltip container */
+  .tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: default;
+  }
+  
+  .tooltip span {
+    vertical-align: text-top;
+    font-size: 15px;
+    margin-left: 8px;
+    font-weight: bold;
+  }
+  
+  /* Tooltip text */
+  .tooltip .tooltiptext {
+    position: absolute;
+    visibility: hidden;
+    background-color: var(--brand-dark-green);
+    color: var(--white);
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 9px;
+    font-weight: 500;
+   
+    width: 90px;
+    margin-left: -60px;
+  }
+  
+  /* Show the tooltip text when you mouse over the tooltip container */
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+  }
+  
+  /* /////////////// */
+  /* LANDING STYLES */
+  /* /////////////// */
+
+  
+  .landing {
+    background: url("https://i.imgur.com/t4HKtz4.png");
+    background-repeat: none;
+    background-position: left top;
+    background-size: contain;
+    background-repeat: no-repeat;
+    height: 838px;
+    margin: 0 20px;
+  }
+  
+  .landing h1 {
+    margin-top: 20px;
+    font-size: 18px;
+  }
+  
+  .landing .landing-instructions {
+    font-size: 13px;
+    font-weight: 500;
+  }
+  
+  .landing .form-group {
+    margin-top: 30px;
+  }
+  
+  .landing input {
+    width: 97%;
+  }
+  
+  .landing .btn{
+    display: block;
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: 0;
+  }
+  
+  .landing p {
+    margin-top: 30px;
+    font-size: 9px;
+    text-align: right;
+    font-weight: 500;
+  }
+  
+  .landing a {
+    color: black;
+  }
+  
+  /* /////////////// */
+  /* LOADING STYLES */
+  /* /////////////// */
+  
+  .loading {
+    background: rgba(116, 211, 174, 0.3);
+  }
+  
+  .loading .loading-text {
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 50px;
+  }
+  
+  .loading .loading-gif {
+    background: url("https://i.imgur.com/i03eUln.gif") no-repeat center center;
+    height: 150px;
+    width: 100%;
+  }
+  
+  /* /////////////// */
+  /* MAIN STYLES */
+  /* /////////////// */
+  
+  .main {
+    margin: 0;
+  }
+  
+  .main .change-source {
+    text-align: right;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: underline;
+    padding-top: 15px;
+    padding-right: 50px;
+  }
+  
+  .main .source-thumbnails {
+    background-color: var(--brand-green);
+    width: 100%;
+    height: 200px;
+  }
+  
+  .main .thumbnails {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding-top: 15px;
+  }
+  
+  .main .thumbnails > button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 40px;
+  }
+  
+  .main .page-input {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 500;
+    margin-top: 5px;
+  }
+  
+  .page-input > input {
+    width: 20px;
+    font-family: Gotham Rounded, sans-serif;
+    border: none;
+    background-color: var(--brand-dark-green);
+    color: var(--white);
+    text-align: center;
+  }
+  
+  .detected-content-container {
+    background: url("https://i.imgur.com/t4HKtz4.png");
+    background-repeat: none;
+    background-position: left top;
+    background-size: contain;
+    background-repeat: no-repeat;
+    height: 838px;
+  }
+  
+  .detected-content {
+    margin: 0 20px;
+  }
+  
+  .detected-content h1 {
+    font-size: 16px;
+    font-weight: bold;
+    display: inline-block;
+    margin-top: 25px;
+  }
+  
+  .detected-content p {
+    font-size: 13px;
+    font-weight: 500;
+  }
+  
+  .detected-content .btn-green {
+    display: block;
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: 0;
+  }
+  
+  .detected-content .btn-orange {
+    display: block;
+    margin: 50px auto 0;
+  }
+  
+  .detected-description > p {
+    margin-bottom: 0;
+  }
+  
+  .detected-content input {
+    cursor: pointer;
+  }
+  
+  .detected-content label {
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  
+  .detected-content input[type=checkbox] {
+    transform: scale(1.15);
+    accent-color: var(--brand-dark-green);
+    margin-top: 16px;
+  }
+  
+  .detected-content .subtext {
+    margin-top: 20px;
+    font-size: 9px;
+    text-align: right;
+    font-weight: 500;
+  }
+</style>
+  

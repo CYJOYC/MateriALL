@@ -4,7 +4,7 @@
 
 <head>
   <base target="_top">
-
+  <?!= include('stylesheet'); ?>
   <script>
 
     // function fetchSlide() {
@@ -63,18 +63,18 @@
 </head>
 
 
-<body>
+<body class="landing">
   <!-- <button onclick="test()">Test</button> -->
   <h1>Hello!</h1>
-  <div>Enter the source URL of your Google slide deck below.</div>
-  <form>
-      <div>source URL</div>
+  <div class="landing-instructions">Enter the source URL of your Google slide deck below.</div>
+  <form class='form-group'>
+    <div>
+      <label>source URL</label>
       <input type="text" name="slideID" id="slideId">
-      <button class="blue" id="fetch-slide" onclick="saveUrl()">enter</button>
-      
+    </div>
+    <button class="btn btn-green" id="fetch-slide" onclick="saveUrl()">enter</button>
   </form>
-
-
+  <p>Getting an error? Visit our <a href=https://www.notion.so/mims22/Welcome-to-MateriALL-3097e43760aa424cbd3a6563138f1334>support page</a> to see what kinds of content sources you can use.</p>
 
 </body>
 </html>

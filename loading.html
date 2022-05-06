@@ -3,6 +3,7 @@
   
   <head>
     <base target="_top">
+    <?!= include('stylesheet'); ?>
     <script>
 
       function changePage(page) {
@@ -21,8 +22,9 @@
   </head>
 
 
-  <body>
-    <div>Loading...</div>
+  <body class="loading">
+    <div class="loading-text">give it a sec!</div>
+    <div class="loading-gif"></div>
   </body>
 
 </html>
