@@ -36,6 +36,7 @@
       textOptionsDiv.innerHTML = currTextOptions;
       textOptionsDiv.innerHTML += currImgOptions;
       textOptionsDiv.innerHTML += `<button class="btn btn-green" id="create-question" onclick="saveCheckedItems()">generate</button>`
+      document.getElementById("pageNumber").value = pageDetails[3];
     }
 
     function updatePageNumber(action) {
@@ -75,6 +76,14 @@
         .showDialog();
     }
 
+    function convertToWorksheet() {
+      google.script.run.withSuccessHandler(alert("WorkSheet is in your google drive now.")).makeWorkSheet();
+    }
+
+    function backToLanding() {
+      google.script.run.withSuccessHandler(changePage).newPage('landing');
+    }
+
     google.script.run.withSuccessHandler(displayContent)
           .getPageTextAndImg(1);
     
@@ -90,9 +99,8 @@
     <div id="output"></div>
 
     <!-- <div id="pageForm" style="display:none;"> -->
-    <div class="source-thumbnails">
-      <div class="change-source">
-        <!-- @Joy the line below should go back to landing.html -->
+    <div class="source-thumbnails" onclick="">
+      <div class="change-source" onclick="backToLanding()">
         <a>change source</a> 
       </div>
       <div class="thumbnails">
@@ -137,13 +145,13 @@
         <form id="textOptions"></form>
 
         <!-- @Joy this is a placeholder, until you add the XX -->
-        <div class="subtext">You’ve selected XX pieces of source content to generate components with.</div>
+        <!-- <div class="subtext">You’ve selected XX pieces of source content to generate components with.</div> -->
 
         <!-- @Joy this needs to be disabled if there are nothing to convert-->
-        <button class="btn btn-orange" type="button">convert to material!</button>
+        <button class="btn btn-orange" type="button" onclick="convertToWorksheet()">convert to material!</button>
 
         <!-- @Joy this is a placeholder, until you add the XX -->
-        <div class="subtext">You’ve added XX worksheet questions.</div>
+        <!-- <div class="subtext">You’ve added XX worksheet questions.</div> -->
       </div>
     </div>
   </body>

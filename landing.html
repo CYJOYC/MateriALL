@@ -7,26 +7,6 @@
   <?!= include('stylesheet'); ?>
   <script>
 
-    // function fetchSlide() {
-    //   let slideId = document.getElementById("slideId").value;
-    //   google.script.run.withSuccessHandler()
-    //       .fetchSlide(slideId);
-    //   google.script.run.withSuccessHandler(onSuccess)
-    //       .parseElements();
-    // }
-
-    // function onSuccess(page) {
-    //   // console.log(page);
-    //     var div = document.getElementById('output');
-    //     div.innerHTML = 'You have ' + page
-    //         + ' in the slide.';
-
-    //     var form = document.getElementById('pageForm');
-    //     if (form.style.display === "none") {
-    //       form.style.display = "block";
-    //     } 
-    // }
-
     function changePage(page) {
       console.log("changePage")
       document.open();
@@ -59,12 +39,21 @@
 
     }
 
+
+    function makeCopy() {
+      google.script.run.withSuccessHandler().makeWorkSheet();
+    }
+
   </script>
 </head>
 
 
 <body class="landing">
-  <!-- <button onclick="test()">Test</button> -->
+  <!-- below line need to delete after test -->
+  <!-- <button onclick="test()">Test</button>
+  <button onclick="makeCopy()">Copy</button> -->
+
+
   <h1>Hello!</h1>
   <div class="landing-instructions">Enter the source URL of your Google slide deck below.</div>
   <form class='form-group'>
