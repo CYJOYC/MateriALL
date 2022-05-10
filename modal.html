@@ -12,7 +12,6 @@
       // shows the content after loading result, and saves the result to global variable
       function saveData(res) {
         suggestedRes = res;
-        console.log(suggestedRes);
         var divToShow = document.getElementById('afterLoading');
         var divToHide = document.getElementById('modal-loading');
         divToHide.style.display = "none";
@@ -75,7 +74,6 @@
 
       // closes small modal
       function closeModal(curr) {
-        console.log(curr);
         document.getElementById(curr).style.display = "none";
         closePopupModal();
       }
@@ -84,68 +82,62 @@
       function showPreview(curr) {
         
         var questionType = curr.id;
-        console.log(questionType);
         var worksheetPreview = document.getElementById('worksheetPreview');
         var answerKeyPreview = document.getElementById('answerKeyPreview');
         var value = curr.value;
-        console.log(value);
         switch (questionType) {
           case 'originalQ':
             worksheetPreview.innerHTML = value;
             answerKeyPreview.innerHTML = value;
             break;
           case 'trueFalseQ':
-            var answer = document.getElementById('trueFalseA').innerHTML;
-            // worksheetPreview.innerHTML = `${value} True or False? /n Answer:/n`             
-            worksheetPreview.innerHTML = `${value} True or False? <br>Answer:<br>` 
-            // answerKeyPreview.innerHTML = `${value} True or False? /n Answer: ${answer}/n`;            
-            answerKeyPreview.innerHTML = `${value} True or False? <br>Answer: ${answer}<br>`;
+            var answer = document.getElementById('trueFalseA').innerHTML;           
+            worksheetPreview.innerHTML = `${value}<br>True or False?<br> Answer:<br>`;          
+            answerKeyPreview.innerHTML = `${value}<br>True or False?<br> Answer: ${answer}<br>`;
             break;
           case 'blankQ':
             var answer = document.getElementById('blankA').value;
-            worksheetPreview.innerHTML = `${value} <br>Answer:<br>` 
-            answerKeyPreview.innerHTML = `${value} <br>Answer: ${answer}<br>`;
+            worksheetPreview.innerHTML = `${value}<br>Answer:<br>` 
+            answerKeyPreview.innerHTML = `${value}<br>Answer: ${answer}<br>`;
             break;
           case 'blankA':
             var question = document.getElementById('blankQ').value;
-            worksheetPreview.innerHTML = `${question} <br>Answer:<br>` 
-            answerKeyPreview.innerHTML = `${question} <br>Answer: ${value}<br>`;
+            worksheetPreview.innerHTML = `${question}<br>Answer:<br>` 
+            answerKeyPreview.innerHTML = `${question}<br>Answer: ${value}<br>`;
             break;          
           case 'multipleQ':
           case 'multipleA':
           case 'multipleO':
             var question = document.getElementById('multipleQ').value;
             var options = document.getElementById('multipleO').value;
-            console.log(options);
-            // console.log(typeof options);
-            // options.split("\n").join("<br>")
-            // console.log(options);
-            // options.split("<br>").join("\n")
-            // console.log(options)
+            options.split("\n").join("<br>")
             var answer = document.getElementById('multipleA').value;
-            worksheetPreview.innerHTML = `${question} <br>${options}<br>Answer:<br>` 
-            answerKeyPreview.innerHTML = `${question} <br>${options}<br>Answer: ${answer}<br>`;
+            worksheetPreview.innerHTML = `${question}<br>${options}<br>Answer:<br>` 
+            answerKeyPreview.innerHTML = `${question}<br>${options}<br>Answer: ${answer}<br>`;
             break;          
           case 'shortQ':
           case 'shortA':
             var question = document.getElementById('shortQ').value;
             var answer = document.getElementById('shortA').value;
-            worksheetPreview.innerHTML = `${question} <br>Answer:<br>` 
-            answerKeyPreview.innerHTML = `${question} <br>Answer: ${answer}<br>`;
+            worksheetPreview.innerHTML = `${question}<br>Answer:<br>` 
+            answerKeyPreview.innerHTML = `${question}<br>Answer: ${answer}<br>`;
             break;          
         }        
       }
 
+
+      function insertToAnswerKey() {
+        var value = document.getElementById('answerKeyPreview').innerHTML;
+        value = value.split("<br>").join("");      
+        google.script.run.withSuccessHandler()
+        .insertToDoc(`\n${value}`);
+        google.script.host.close();        
+      }
+
       // inserts content to doc
       function insert() {
-        var value = document.getElementById('answerKeyPreview').innerHTML;
-        value = value.split("<br>").join("\n");
-        google.script.run.withSuccessHandler()
-        .insertToDoc(value);
-        // var doc = DocumentApp.getActiveDocument();
-        // var body = doc.getBody();
-        // body.appendParagraph(value);
-        google.script.host.close();
+        google.script.run.withSuccessHandler(insertToAnswerKey)
+        .insertAnswerKeyTitle();
       }
 
       function showWorksheetPreview() {
@@ -161,10 +153,6 @@
       function popupModal() {
         var div = document.getElementById('small-modal-container');
         div.style.display = 'block';
-        // var div = document.getElementById('cover-area-1');
-        // // div.style.backgroundColor= "rgba(0, 0, 0, .6)";
-        // div.sytle.backgroundColor = "rgba(0, 0, 0, .6)";
-        // div.style.backgroundBlendMode= "multiply";
       }
 
       function closePopupModal() {
@@ -194,7 +182,6 @@
 
       // shows small modal with more trueFalse options
       function showTrueFalseOptions() {
-        // darkgreyCover()
         popupModal();
         var trueFalseModal = document.getElementById('trueFalseModal');
         trueFalseModal.style.display = 'block';
@@ -265,12 +252,9 @@
         blankModal.style.display = 'block';
         var form = document.getElementById("blankOptions");
         var beginningArr = suggestedRes['blank']['beginning'].split(" ").filter(word => word.length > 0);
-        console.log(beginningArr)
         var answerArr = suggestedRes['blank']['answer'].split(" ").filter(word => word.length > 0);
         var endingArr = suggestedRes['blank']['end'].split(" ").filter(word => word.length > 0);
         form.innerHTML = "";
-        //  &nbsp
-        
         for (var i = 0; i < beginningArr.length; i++) {
           form.innerHTML += `<input type="checkbox" name="blankOptions" value="${beginningArr[i]}" id="${beginningArr[i]}-b${i}"><label for="${beginningArr[i]}-b${i}">${beginningArr[i]} </label>`
         }
@@ -328,7 +312,6 @@
         var finalA = document.querySelector("input[name='multipleWords']:checked").value;
         var optionsForm = document.getElementById('multipleOptions');
         var optionsArr = suggestedRes["mc_options"][finalA].slice();
-        console.log(optionsArr)
         optionsForm.innerHTML = "";
         var randomPos = Math.floor(Math.random()*(optionsArr.length + 1));
         optionsArr.splice(randomPos, 0, finalA);
@@ -339,7 +322,7 @@
             optionsForm.innerHTML += `<div><input type="checkbox" name="multipleOptions" value="${optionsArr[i]}" id="${optionsArr[i]}-${i}"><label for="${optionsArr[i]}-${i}"">${optionsArr[i]}</label></div>`;
           }
         }
-        optionsForm.innerHTML += `<div class="multiple-add-options" onclick="addNewOption()">+ add another option</div>`;
+        optionsForm.innerHTML += `<div class="multiple-add-options" ><span class="multiple-add-options-text" onclick="addNewOption()">+ add another option</span></div>`;
         optionsForm.innerHTML += `<div class="submit-btn-container-multiple"><input id="submit-multiple" type="submit" value="done" onclick="submitMultiple()"></div>`
 
       }
@@ -393,15 +376,11 @@
           var finalOptionsArr = Array.from(document.querySelectorAll("input[name='multipleOptions']:checked")).map((elem) => elem.value); 
           var finalO = "";
           for (var i = 0; i < finalOptionsArr.length; i++) {
-            finalO += `${String.fromCharCode(i + 97)}. ${finalOptionsArr[i]}\n`
-            console.log(finalOptionsArr[i])
-            console.log(answer)
+            finalO += `${String.fromCharCode(i + 97)}. ${finalOptionsArr[i]}\n`;
             if (finalOptionsArr[i] == answer) {
               finalA = `${String.fromCharCode(i + 97)}. ${finalOptionsArr[i]}`
             }
           }
-          // finalO = finalO.substring(0, finalO.length - 2);
-
           var answerToUpdate = document.getElementById('multipleA');
           var questionToUpdate = document.getElementById('multipleQ');
           var optionsToUpdate = document.getElementById('multipleO');
@@ -413,13 +392,7 @@
       }
 
 
-
-
-      // ======================================== for shortQuestion ===========================================
-
-
-
-
+      // ======================================== end of each section ===========================================
 
       google.script.run.withSuccessHandler(saveData)
         .getCheckedData();
@@ -433,7 +406,7 @@
   <body class="modal">
 
     <div id="modal-loading" class="modal-loading">
-      <div class="loading-text">give it a sec!<br>We are generating the questions based on the content you</div>
+      <div class="loading-text">Give it a sec!<br>We are generating the questions based on the content you selected.</div>
       <div class="loading-gif"></div>
     </div>
 
@@ -456,9 +429,8 @@
       </form>
 
       <button class="btn btn-orange-add" onclick="insert()">add</button>
-
-      <!-- <input type="button" class="btn" value="insert" onclick="insert()"/> -->
     </div>
+
     <!-- main area for question and answer -->
       <div class="main-question" id="mainQuestion">
         <!-- for original main area -->
@@ -522,12 +494,9 @@
         <div id="shortDiv" class="question-edit-container">
           <div>To change the question MateriALL generated, edit the question.</div>
           <div class="question-edit-label">question</div>
-          <!-- <div style="text-decoration: underline;" onClick="showShortOptions()">edit question</div> -->
           <textarea class="question-edit-textarea" type="text" id="shortQ" onkeypress="showPreview(this)" onchange="showPreview(this)"  rows="2" cols="50"></textarea>
           <div class="question-edit-label">answer</div>
           <textarea class="question-edit-textarea" type="text" id="shortA" onkeypress="showPreview(this)" onchange="showPreview(this)"  rows="5" cols="50"></textarea>       
-          <!-- <div>answer space</div>
-          <input type="text" id="shortL" size="10">    -->
         </div>
 
       </div>
@@ -545,7 +514,7 @@
               <input class="preview-btn-show" type="radio" name="showPreview" id="showWorksheet" onclick="showWorksheetPreview()">
               <label for="showWorksheet">Worksheet Preview</label>
             </form>
-            <div class="tooltip-container margin-left-280px tooltip-container-preview">
+            <div class="tooltip-container tooltip-container-preview">
               <img class="tooltip tooltip-preview">
               <span class="tooltiptext tooltiptext-preview">These previews show how your generated content will look once MateriALL has converted them.</span>
             </div>
@@ -645,12 +614,6 @@
 
         </div>
       </div>
-
-
-
-      
-      <!-- <input type="button" class="btn" value="Close" onclick="google.script.host.close()" />        -->
-
 
   </div>
   </body>

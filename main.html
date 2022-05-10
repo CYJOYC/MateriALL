@@ -5,19 +5,15 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://fonts.sandbox.google.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
     <?!= include('stylesheet'); ?>
+
   <script>
     function getPageContent() {
       let slidePage = document.getElementById("pageNumber").value;
-      console.log(slidePage);
-      console.log("check")
       google.script.run.withSuccessHandler(displayContent)
           .getPageTextAndImg(parseInt(slidePage));
-      // google.script.run.withSuccessHandler()
-      //     .showDialog(slidePage);
     }
 
     function displayContent(pageDetails) {
-      console.log(pageDetails)
       let thumbnailDiv = document.getElementById('thumbnail');
       thumbnailDiv.innerHTML = "<image src='"+pageDetails[0]+"' atl='pageThumbnail'/>";
       let textOptionsDiv = document.getElementById('textOptions');
@@ -42,7 +38,6 @@
     function updatePageNumber(action) {
       var pageInput = document.getElementById("pageNumber");
       var pageNumber = parseInt(pageInput.value);
-      console.log(pageNumber)
       if (action === "next") {
         pageInput.value = pageNumber + 1;
       } else {
@@ -97,8 +92,6 @@
 
   <body class="main">
     <div id="output"></div>
-
-    <!-- <div id="pageForm" style="display:none;"> -->
     <div class="source-thumbnails" onclick="">
       <div class="change-source" onclick="backToLanding()">
         <a>change source</a> 
@@ -106,29 +99,16 @@
       <div class="thumbnails">
         <button class="material-icons" type="button" onClick="updatePageNumber('prev')">arrow_left</button>
         <span id="thumbnail"></span>
-        <!-- <input type="radio" name="addressType" value="Domestic" onchange="GetNumber(this.value)"> -->
         <button class="material-icons" type="button" onClick="updatePageNumber('next')">arrow_right</button>
       </div>
       <div class="page-input">
         <span>slide </span>
-        <input id="pageNumber" onkeypress="getPageContent()" value="1">
+        <input id="pageNumber" onchange="getPageContent()" value="1">
         <span> of </span>
         <span id="totalPages"></span>
       </div>
     </div>
     
-
-    <!-- <form> -->
-      <!-- <div>Please enter the page of the slide to create content</div> -->
-      
-      <!-- <input type='text' name='slidePage' id='slidePage' > -->
-      <!-- <button class="blue" type="button" id="get-page-content" onclick="getPageContent()">Create Page</button> -->
-    <!-- </form> -->
-
-
-    <!-- </div> -->
-    
-    <!-- <button class="blue" id="getPageContent" onclick="getPageContent()">Create Page</button> -->
     <div class="detected-content-container">
       <div class="detected-content">
         <div>
@@ -144,14 +124,8 @@
         </div>
         <form id="textOptions"></form>
 
-        <!-- @Joy this is a placeholder, until you add the XX -->
-        <!-- <div class="subtext">You’ve selected XX pieces of source content to generate components with.</div> -->
+        <div class="subtext">Don’t forget to convert your answer key into a material!<br>Go to your Google Docs toolbar --> Extensions --><br>MateriALL --> Convert Answer Key to Worksheet</div>
 
-        <!-- @Joy this needs to be disabled if there are nothing to convert-->
-        <button class="btn btn-orange" type="button" onclick="convertToWorksheet()">convert to material!</button>
-
-        <!-- @Joy this is a placeholder, until you add the XX -->
-        <!-- <div class="subtext">You’ve added XX worksheet questions.</div> -->
       </div>
     </div>
   </body>
