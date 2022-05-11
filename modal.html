@@ -8,10 +8,12 @@
 
     <script>
       var suggestedRes;
+      var selectedImg;
 
       // shows the content after loading result, and saves the result to global variable
       function saveData(res) {
-        suggestedRes = res;
+        suggestedRes = res[0];
+        selectedImg = res[1];
         var divToShow = document.getElementById('afterLoading');
         var divToHide = document.getElementById('modal-loading');
         divToHide.style.display = "none";
@@ -84,7 +86,9 @@
         var questionType = curr.id;
         var worksheetPreview = document.getElementById('worksheetPreview');
         var answerKeyPreview = document.getElementById('answerKeyPreview');
+        var imagePreview = document.getElementById('imagePreview');
         var value = curr.value;
+
         switch (questionType) {
           case 'originalQ':
             worksheetPreview.innerHTML = value;
@@ -92,8 +96,8 @@
             break;
           case 'trueFalseQ':
             var answer = document.getElementById('trueFalseA').innerHTML;           
-            worksheetPreview.innerHTML = `${value}<br>True or False?<br> Answer:<br>`;          
-            answerKeyPreview.innerHTML = `${value}<br>True or False?<br> Answer: ${answer}<br>`;
+            worksheetPreview.innerHTML = `True or False? ${value}<br>Answer:<br>`;          
+            answerKeyPreview.innerHTML = `True or False? ${value}<br>Answer: ${answer}<br>`;
             break;
           case 'blankQ':
             var answer = document.getElementById('blankA').value;
@@ -122,22 +126,32 @@
             worksheetPreview.innerHTML = `${question}<br>Answer:<br>` 
             answerKeyPreview.innerHTML = `${question}<br>Answer: ${answer}<br>`;
             break;          
-        }        
+        }      
+
+        if (selectedImg.length !== 0) {
+          for (var i = 0; i < selectedImg.length; i++) {
+              imagePreview.innerHTML = `<img style="width:500px;" src="${selectedImg[i]}"/>`;
+          }
+
+        }
+
       }
 
-
-      function insertToAnswerKey() {
-        var value = document.getElementById('answerKeyPreview').innerHTML;
-        value = value.split("<br>").join("");      
-        google.script.run.withSuccessHandler()
-        .insertToDoc(`\n${value}`);
-        google.script.host.close();        
+      function endHost() {
+        google.script.host.close(); 
       }
+
 
       // inserts content to doc
       function insert() {
-        google.script.run.withSuccessHandler(insertToAnswerKey)
-        .insertAnswerKeyTitle();
+        var value = document.getElementById('answerKeyPreview').innerHTML;
+        value = value.split("<br>").join("\n");   
+        var hasImage = false;
+        if (selectedImg.length !== 0) { 
+          hasImage = true;
+        }
+        google.script.run.withSuccessHandler(endHost)
+        .insertToDoc([`${value}`, hasImage]);
       }
 
       function showWorksheetPreview() {
@@ -376,11 +390,17 @@
           var finalOptionsArr = Array.from(document.querySelectorAll("input[name='multipleOptions']:checked")).map((elem) => elem.value); 
           var finalO = "";
           for (var i = 0; i < finalOptionsArr.length; i++) {
-            finalO += `${String.fromCharCode(i + 97)}. ${finalOptionsArr[i]}\n`;
+            if (i == finalOptionsArr.length - 1) {
+              finalO += `${String.fromCharCode(i + 97)}. ${finalOptionsArr[i]}`;
+            } else {
+              finalO += `${String.fromCharCode(i + 97)}. ${finalOptionsArr[i]}\n`;
+            }
+            
             if (finalOptionsArr[i] == answer) {
               finalA = `${String.fromCharCode(i + 97)}. ${finalOptionsArr[i]}`
             }
           }
+
           var answerToUpdate = document.getElementById('multipleA');
           var questionToUpdate = document.getElementById('multipleQ');
           var optionsToUpdate = document.getElementById('multipleO');
@@ -522,6 +542,7 @@
           <div class="preview-content">
             <div id="worksheetPreview" class="preview-text" style="display: none;"></div>
             <div id="answerKeyPreview" class="preview-text"></div>
+            <div id="imagePreview" class="preview-img"></div>
           </div>
         </div>
       </div> 

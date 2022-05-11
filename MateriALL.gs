@@ -56,12 +56,28 @@ function provideNewDocURL(newURL) {
   linkPar.setLinkUrl(newURL)
 }
 
-// displays the new doc url to display in answer key
-function insertAnswerKeyTitle() {
-  var currBody = DocumentApp.getActiveDocument().getBody();  
+// inserts images to google doc
+function insertImgToDoc() {
+  var imgresult = JSON.parse(userProperties.getProperty('CHECKED_IMG'));
+  var doc = DocumentApp.getActiveDocument();
+  var body = doc.getBody();
+  for (var i = 0; i < imgresult.length; i++) {
+    var image = UrlFetchApp.fetch(imgresult[i]).getBlob();
+    var currI = body.appendImage(image)
+    currI.setWidth(currI.getWidth() * 0.3)
+    currI.setHeight(currI.getHeight() * 0.3)
+  }
+}
+
+// inserts content to google doc
+function insertToDoc(res) {
+  var value = res[0];
+  var hasImage = res[1];
+  var doc = DocumentApp.getActiveDocument();
+  var body = doc.getBody();
   var isEmpty = true;
-  for(var i = 0; i<currBody.getNumChildren();i++) {
-    if(currBody.getChild(i).getText() != "") {
+  for(var i = 0; i < body.getNumChildren();i++) {
+    if(body.getChild(i).getText() != "") {
       isEmpty = false;
       break;
     }
@@ -69,18 +85,16 @@ function insertAnswerKeyTitle() {
   if (isEmpty) {
     var style = {};
     style[DocumentApp.Attribute.FONT_SIZE] = 10;
-    var answerKeyTitle = currBody.insertParagraph(0, "Your Added Questions");
-    var instructionText = currBody.insertParagraph(1, "Instruction to convert to worksheet: Please make sure you convert your answer key to a material! Go to the Google Docs toolbar --> Extensions --> MateriALL --> Convert Answer Key to Worksheet. This current document will become your answer key.");
+    var answerKeyTitle = body.insertParagraph(0, "Your Added Questions");
+    var instructionText = body.insertParagraph(1, "Instruction to convert to worksheet: Please make sure you convert your answer key to a material! Go to the Google Docs toolbar --> Extensions --> MateriALL --> Convert Answer Key to Worksheet. This current document will become your answer key.");
     instructionText.setAttributes(style);
   }
-}
 
-// inserts content to google doc
-function insertToDoc(value) {
-  var doc = DocumentApp.getActiveDocument();
-  var body = doc.getBody();
   body.appendParagraph(value);
-
+  
+  if (hasImage) {
+    insertImgToDoc();
+  }
 }
 
 // ===== functions for all pages ===========================================
@@ -131,7 +145,7 @@ function saveAndGetSlide() {
     var currPageTexts = [];
     var currPageUrls = [];
     currPageElements.forEach((element) => {
-      if (element.shape && element.shape.shapeType === "TEXT_BOX") {
+      if (element.shape && element.shape.shapeType === "TEXT_BOX" && element.shape.text) {
         var currTextElements = element.shape.text.textElements;
         if (currTextElements) {
           currTextElements.forEach((text) => {
@@ -207,7 +221,10 @@ function getCheckedData() {
   // backup API: "https://materiall.herokuapp.com/autogenerate"
   var response = UrlFetchApp.fetch("https://materiall.onrender.com/autogenerate", options);
   var result = JSON.parse(response.getContentText());
-  return result
+
+  var imgresult = JSON.parse(userProperties.getProperty('CHECKED_IMG'));
+
+  return [result, imgresult]
 }
 
 // gets thumbnail for slides

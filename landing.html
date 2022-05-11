@@ -1,623 +1,70 @@
 <!DOCTYPE html>
+<!-- this page is for getting the slide url -->
 <html>
-  <head>
-    <base target="_top">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://fonts.sandbox.google.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
-    <?!= include('modalStyleSheet'); ?>
 
-    <script>
-      var suggestedRes;
+<head>
+  <base target="_top">
+  <?!= include('stylesheet'); ?>
 
-      // shows the content after loading result, and saves the result to global variable
-      function saveData(res) {
-        suggestedRes = res;
-        var divToShow = document.getElementById('afterLoading');
-        var divToHide = document.getElementById('modal-loading');
-        divToHide.style.display = "none";
-        divToShow.style.display = "flex";
-        showResForQuestions();
-      }
+  <script>
+    // changes page
+    function changePage(page) {
+      document.open();
+      document.write(page);
+      document.close();
+    }
 
-      // shows the result based on question type clicked
-      function showResForQuestions() {
-        // hides all the other parts, and only shows the currently selected type
-        var questionType = document.querySelector("input[class='questionType']:checked").value;
-        questionType += "Div";
-        var questionTypesArr = ['originalDiv', 'trueFalseDiv', 'blankDiv', 'multipleDiv', 'shortDiv'];
-        for (var type of questionTypesArr) {
-          var current = document.getElementById(`${type}`)
-          var display = current.style.display
-          if (type !== questionType) {
-            current.style.display = 'none';
-          }
-          else {
-            current.style.display = 'block';
-          }
-        }
-        // changes the content accordingly
-        var divToChange = document.getElementById('mainQuestion');
-        switch (questionType) {
-          case 'originalDiv':
-            var div = document.getElementById('originalQ');
-            div.value = suggestedRes['text'];
-            showPreview(div);
-            break;
-          case 'trueFalseDiv':
-            var div = document.getElementById('trueFalseQ');
-            div.value = suggestedRes['text'];
-            showPreview(div);
-            break;
-          case 'blankDiv': // blankQ
-            var questionDiv = document.getElementById('blankQ');
-            questionDiv.value = suggestedRes['blank']['blank_sentence'];
-            var answerDiv = document.getElementById('blankA');
-            answerDiv.value = suggestedRes['blank']['answer'];
-            showPreview(questionDiv);
-            break;
-          case 'multipleDiv':
-            var div = document.getElementById('multipleQ');
-            div.value = suggestedRes['text'];
-            var optionDiv = document.getElementById('multipleO');
-            optionDiv.value = "You have not created or generated any options yet. Use “edit options.”";            
-            var answerDiv = document.getElementById('multipleA');
-            answerDiv.value = "";
-            showPreview(div);
-            break;          
-          case 'shortDiv':
-            var div = document.getElementById('shortQ');
-            div.value = suggestedRes['text'];
-            showPreview(div);
-            break;          
-        }
-      }
+    // changes to loading
+    function toLoading(res) {
+      google.script.run.withSuccessHandler(changePage).newPage('loading');
+    }
 
-      // closes small modal
-      function closeModal(curr) {
-        document.getElementById(curr).style.display = "none";
-        closePopupModal();
-      }
+    // shows returned error
+    function showError(msg, element) {
+      alert(msg)
+    }
 
-      // shows content in preview
-      function showPreview(curr) {
-        
-        var questionType = curr.id;
-        var worksheetPreview = document.getElementById('worksheetPreview');
-        var answerKeyPreview = document.getElementById('answerKeyPreview');
-        var value = curr.value;
-        switch (questionType) {
-          case 'originalQ':
-            worksheetPreview.innerHTML = value;
-            answerKeyPreview.innerHTML = value;
-            break;
-          case 'trueFalseQ':
-            var answer = document.getElementById('trueFalseA').innerHTML;           
-            worksheetPreview.innerHTML = `${value}<br>True or False?<br> Answer:<br>`;          
-            answerKeyPreview.innerHTML = `${value}<br>True or False?<br> Answer: ${answer}<br>`;
-            break;
-          case 'blankQ':
-            var answer = document.getElementById('blankA').value;
-            worksheetPreview.innerHTML = `${value}<br>Answer:<br>` 
-            answerKeyPreview.innerHTML = `${value}<br>Answer: ${answer}<br>`;
-            break;
-          case 'blankA':
-            var question = document.getElementById('blankQ').value;
-            worksheetPreview.innerHTML = `${question}<br>Answer:<br>` 
-            answerKeyPreview.innerHTML = `${question}<br>Answer: ${value}<br>`;
-            break;          
-          case 'multipleQ':
-          case 'multipleA':
-          case 'multipleO':
-            var question = document.getElementById('multipleQ').value;
-            var options = document.getElementById('multipleO').value;
-            options.split("\n").join("<br>")
-            var answer = document.getElementById('multipleA').value;
-            worksheetPreview.innerHTML = `${question}<br>${options}<br>Answer:<br>` 
-            answerKeyPreview.innerHTML = `${question}<br>${options}<br>Answer: ${answer}<br>`;
-            break;          
-          case 'shortQ':
-          case 'shortA':
-            var question = document.getElementById('shortQ').value;
-            var answer = document.getElementById('shortA').value;
-            worksheetPreview.innerHTML = `${question}<br>Answer:<br>` 
-            answerKeyPreview.innerHTML = `${question}<br>Answer: ${answer}<br>`;
-            break;          
-        }        
-      }
+    // passes the url to gs, and directs to loading page
+    function saveUrl() {
+      let slideUrl = document.getElementById("slideId").value;
+      google.script.run.withSuccessHandler(toLoading)
+            .withFailureHandler(showError).saveSlideID(slideUrl);
+    }
+
+    // opens a new broswer window for support page
+    function openPage() {
+      window.open("https://mims22.notion.site/Welcome-to-MateriALL-3097e43760aa424cbd3a6563138f1334", '_blank', 'location=yes,height=600,width=520,scrollbars=yes,status=yes');
+    }
+
+    // function test() {  
+    //   google.script.run.withSuccessHandler().showDialog();
+    // }
+
+    // function makeCopy() {
+    //   google.script.run.withSuccessHandler().makeWorkSheet();
+    // }
 
 
-      function insertToAnswerKey() {
-        var value = document.getElementById('answerKeyPreview').innerHTML;
-        value = value.split("<br>").join("");      
-        google.script.run.withSuccessHandler()
-        .insertToDoc(`\n${value}`);
-        google.script.host.close();        
-      }
 
-      // inserts content to doc
-      function insert() {
-        google.script.run.withSuccessHandler(insertToAnswerKey)
-        .insertAnswerKeyTitle();
-      }
-
-      function showWorksheetPreview() {
-        document.getElementById('worksheetPreview').style.display = 'block';
-        document.getElementById('answerKeyPreview').style.display = 'none';
-      }
-
-      function showAnswerKeyPreview() {
-        document.getElementById('worksheetPreview').style.display = 'none';
-        document.getElementById('answerKeyPreview').style.display = 'block';
-      }
-
-      function popupModal() {
-        var div = document.getElementById('small-modal-container');
-        div.style.display = 'block';
-      }
-
-      function closePopupModal() {
-        var div = document.getElementById('small-modal-container');
-        div.style.display = 'none';        
-      }
-
-      // ======================================== for TrueFalseQuestion ========================================
-      // shows ture or false question and answer according to toggle changes
-      function toggleTrueFalse() {
-        var toggle = document.getElementById("trueFalseCheckbox");
-        var questionDiv = document.getElementById("trueFalseQ");
-        var answerDiv = document.getElementById("trueFalseA");
-        if (!toggle.checked) {
-          questionDiv.value = suggestedRes['text']; 
-          answerDiv.innerHTML = "True";
-        } else {
-          if (suggestedRes['false_sentences'].length !== 0) {
-            questionDiv.value = suggestedRes['false_sentences'][0]; 
-          } else {
-            questionDiv.value = ""; 
-          }
-          answerDiv.innerHTML = "False";
-        }
-        showPreview(questionDiv);
-      }
-
-      // shows small modal with more trueFalse options
-      function showTrueFalseOptions() {
-        popupModal();
-        var trueFalseModal = document.getElementById('trueFalseModal');
-        trueFalseModal.style.display = 'block';
-        var toggle = document.getElementById("trueFalseCheckbox");
-        var modalToggle = document.getElementById("modalTrueFalseCheckbox");
-        if (!toggle.checked) {
-          modalToggle.checked = false;
-          generateTrueFalseOptions(true);
-        } else {
-          modalToggle.checked = true;
-          generateTrueFalseOptions(false);
-        }
-      }
-
-      // shows true or false options with the toggle in small modal
-      function toggleModalTrueFalse() {
-        var modalToggle = document.getElementById("modalTrueFalseCheckbox");
-        if (!modalToggle.checked) {
-          generateTrueFalseOptions(true);
-        } else {
-          generateTrueFalseOptions(false);
-          }
-        }       
-
-      // generates true and false options in small modal
-      function generateTrueFalseOptions(answer) {
-        var form = document.getElementById("trueFalseOptions");
-        if (answer) {
-          form.innerHTML = "";
-          form.innerHTML = `<input type="radio" name="tFStatements" value="${suggestedRes['text']}" checked><label for="${suggestedRes['text']}">${suggestedRes['text']}</label>\n`;
-        } else {
-          form.innerHTML = "";
-          for (var i = 0; i < suggestedRes['false_sentences'].length; i++) {
-            form.innerHTML += `<input type="radio" name="tFStatements" value="${suggestedRes['false_sentences'][i]}"><label for="${suggestedRes['false_sentences'][i]}">${suggestedRes['false_sentences'][i]}</label>\n`;
-          }
-        }
-        form.innerHTML += `<input type="radio" name="tFStatements" value="" id="other"><label for="other" id="other-label">Other</label><input id="inputother" class="other-input" type="text" name="othertext" onchange="changeradioother()">\n`
-        form.innerHTML += `<input id="submit-true-false" type="submit" value="done" onclick="submitTrueFalse()">`
-      }
-
-      // clicks other radio input when user types in other input
-      function changeradioother() {
-	      var other= document.getElementById("other");
-	      other.value=document.getElementById("inputother").value;  
-        other.checked = true;     
-      }
-
-      // submits the small modal, and updates the question and answer in big modal
-      function submitTrueFalse() {
-          var finalQ = document.querySelector("input[name='tFStatements']:checked").value;
-          var finalA = document.getElementById("modalTrueFalseCheckbox").checked;
-          var answerToUpdate = document.getElementById('trueFalseA');
-          document.getElementById("trueFalseQ").value = finalQ;    
-          document.getElementById("trueFalseCheckbox").checked = finalA;
-          closeModal("trueFalseModal");
-          if (!finalA) {
-            answerToUpdate.innerHTML = "True"
-          } else {
-            answerToUpdate.innerHTML = "False"
-          }
-          showPreview(document.getElementById("trueFalseQ"))
-      }
-
-      // ======================================== for blankQuestion ===========================================
-      function showBlankOptions() {
-        popupModal();
-        var blankModal = document.getElementById('blankModal');
-        blankModal.style.display = 'block';
-        var form = document.getElementById("blankOptions");
-        var beginningArr = suggestedRes['blank']['beginning'].split(" ").filter(word => word.length > 0);
-        var answerArr = suggestedRes['blank']['answer'].split(" ").filter(word => word.length > 0);
-        var endingArr = suggestedRes['blank']['end'].split(" ").filter(word => word.length > 0);
-        form.innerHTML = "";
-        for (var i = 0; i < beginningArr.length; i++) {
-          form.innerHTML += `<input type="checkbox" name="blankOptions" value="${beginningArr[i]}" id="${beginningArr[i]}-b${i}"><label for="${beginningArr[i]}-b${i}">${beginningArr[i]} </label>`
-        }
-        for (var i = 0; i < answerArr.length; i++) {
-          form.innerHTML += `<input type="checkbox" name="blankOptions" value="${answerArr[i]}" id="${answerArr[i]}-a${i}" checked><label for="${answerArr[i]}-a${i}">${answerArr[i]} </label>`
-        }
-        for (var i = 0; i < endingArr.length; i++) {
-          form.innerHTML += `<input type="checkbox" name="blankOptions" value="${endingArr[i]}" id="${endingArr[i]}-e${i}" ><label for="${endingArr[i]}-e${i}">${endingArr[i]} </label>`
-        }
-        
-        form.innerHTML += `<div class="submit-btn-container"><input id="submit-blank" type="submit" value="done" onclick="submitBlank()"></div>`
-      }
+  </script>
+</head>
 
 
-      function submitBlank() {
-          var form = document.getElementById("blankOptions");
-          var finalAArr = Array.from(document.querySelectorAll("input[name='blankOptions']:checked")).map((elem) => elem.value);  
-          var finalA = finalAArr.join(", ");
-          var finalQArr = [];
-          Array.from(form.elements).forEach((input) => {
-            if (input.type === "checkbox" ) {
-              if (input.checked) {
-                finalQArr.push(`${"_".repeat(input.value.length)}`)
-              } else {
-                finalQArr.push(input.value)
-              }
-            }
-          })
-          var finalQ = finalQArr.join(" ");
+<body class="landing">
+  <!-- below line need to delete after test -->
+  <!-- <button onclick="test()">Test</button>
+  <button onclick="makeCopy()">Copy</button> -->
 
-          var answerToUpdate = document.getElementById('blankA');
-          answerToUpdate.value = finalA;
-          document.getElementById("blankQ").value = finalQ;    
-          closeModal("blankModal");          
-          showPreview(document.getElementById("blankQ"))
-      }
-
-
-      // ======================================== for multipleQuestion ========================================
-      function showmultipleOptions() {
-        popupModal();
-        var multipleModal = document.getElementById('multipleModal');
-        multipleModal.style.display = 'block';
-        var questionForm = document.getElementById('multipleWords');
-        var wordsArr = suggestedRes['text'].split(" ").filter(word => word.length > 0);
-        questionForm.innerHTML = "";
-        for (var i = 0; i < wordsArr.length; i++) {
-          questionForm.innerHTML += `<input type="radio" name="multipleWords" value="${wordsArr[i]}" id="${wordsArr[i]}-${i}"><label for="${wordsArr[i]}-${i}"> ${wordsArr[i]}</label>`;
-        }
-        var multipleForm = document.getElementById('multipleOptions');
-        multipleForm.innerHTML = "";        
-      }
-
-      function showMultipleOptionsInModal() {
-        var finalA = document.querySelector("input[name='multipleWords']:checked").value;
-        var optionsForm = document.getElementById('multipleOptions');
-        var optionsArr = suggestedRes["mc_options"][finalA].slice();
-        optionsForm.innerHTML = "";
-        var randomPos = Math.floor(Math.random()*(optionsArr.length + 1));
-        optionsArr.splice(randomPos, 0, finalA);
-        for (var i = 0; i < optionsArr.length; i++) {
-          if (optionsArr[i] === finalA) {
-            optionsForm.innerHTML += `<div><input type="checkbox" name="multipleOptions" value="${optionsArr[i]}" id="${optionsArr[i]}-${i}" checked><label for="${optionsArr[i]}-${i}">${optionsArr[i]}</label></div>`;
-          } else {
-            optionsForm.innerHTML += `<div><input type="checkbox" name="multipleOptions" value="${optionsArr[i]}" id="${optionsArr[i]}-${i}"><label for="${optionsArr[i]}-${i}"">${optionsArr[i]}</label></div>`;
-          }
-        }
-        optionsForm.innerHTML += `<div class="multiple-add-options" ><span class="multiple-add-options-text" onclick="addNewOption()">+ add another option</span></div>`;
-        optionsForm.innerHTML += `<div class="submit-btn-container-multiple"><input id="submit-multiple" type="submit" value="done" onclick="submitMultiple()"></div>`
-
-      }
-
-      function addNewOption() {
-        var optionsForm = document.getElementById('multipleOptions');
-        var index = optionsForm.length - 1;
-        var newContainer = document.createElement("div");
-        var newInput = document.createElement("input");
-        newInput.type="checkbox"
-        newInput.name = "multipleOptions"
-        newInput.id = index;
-        newInput.value = "other";
-        var newLabel = document.createElement("label");
-        newLabel.innerHTML = "write your own option";
-        newLabel.id = "other-label-multiple";
-        newContainer.appendChild(newInput);
-        newContainer.appendChild(newLabel);
-        var newFill = document.createElement("input");
-        newFill.id = "inputother";
-        newFill.type = "text";
-        newFill.name = index;
-        newFill.className = "other-input";
-        newFill.onchange = updateMultipleOther;
-        optionsForm.appendChild(newContainer);
-        optionsForm.appendChild(newFill);       
-      }
-
-      function updateMultipleOther() {
-        var otherID = this.name;
-	      var otherOption= document.getElementById(otherID);
-	      otherOption.value = this.value;        
-      }
-
-      function submitMultiple() {
-          var answer = document.querySelector("input[name='multipleWords']:checked").value;  
-          var finalA = "";
-          var questionForm = document.getElementById("multipleWords");
-          var finalQArr = [];
-          Array.from(questionForm.elements).forEach((input) => {
-            if (input.checked) {
-              finalQArr.push(`${"_".repeat(input.value.length)}`)
-            } else {
-              finalQArr.push(input.value)
-            }
-            })
-          
-          var finalQ = finalQArr.join(" ");
-
-          var optionsForm = document.getElementById("multipleOptions");
-          var finalOptionsArr = Array.from(document.querySelectorAll("input[name='multipleOptions']:checked")).map((elem) => elem.value); 
-          var finalO = "";
-          for (var i = 0; i < finalOptionsArr.length; i++) {
-            finalO += `${String.fromCharCode(i + 97)}. ${finalOptionsArr[i]}\n`;
-            if (finalOptionsArr[i] == answer) {
-              finalA = `${String.fromCharCode(i + 97)}. ${finalOptionsArr[i]}`
-            }
-          }
-          var answerToUpdate = document.getElementById('multipleA');
-          var questionToUpdate = document.getElementById('multipleQ');
-          var optionsToUpdate = document.getElementById('multipleO');
-          answerToUpdate.value = finalA;
-          questionToUpdate.value = finalQ;
-          optionsToUpdate.value = finalO;   
-          closeModal("multipleModal");          
-          showPreview(document.getElementById("multipleQ"));
-      }
-
-
-      // ======================================== end of each section ===========================================
-
-      google.script.run.withSuccessHandler(saveData)
-        .getCheckedData();
-      
-
-
-    </script>
-  </head>
-
-
-  <body class="modal">
-
-    <div id="modal-loading" class="modal-loading">
-      <div class="loading-text">Give it a sec!<br>We are generating the questions based on the content you selected.</div>
-      <div class="loading-gif"></div>
+  <h1>Hello!</h1>
+  <div class="landing-instructions">Enter the source URL of your Google slide deck below.</div>
+  <form class='form-group'>
+    <div>
+      <label>source URL</label>
+      <input type="text" name="slideID" id="slideId">
     </div>
+    <button class="btn btn-green" id="fetch-slide" onclick="saveUrl()">enter</button>
+  </form>
+  <p>Getting an error? Visit our <a onclick="openPage()" class="support-btn">support page</a> to see what kinds of content sources you can use.</p>
 
-    <div class="modal-container" style="display:none;" id="afterLoading">
-
-    <!-- form for question types -->
-    <div class="main-editing-container" id="cover-area-1">
-    <div class="main-menu">
-      <form class="question-type-form">
-        <input type="radio" id="original" class="questionType" name="questionType" value="original" onclick="showResForQuestions()" checked>
-        <label for="original">Original</label>
-        <input type="radio" id="trueFalse" class="questionType" name="questionType" value="trueFalse" onclick="showResForQuestions()">
-        <label for="trueFalse">True/False</label>
-        <input type="radio" id="blank" class="questionType" name="questionType" value="blank" onclick="showResForQuestions()">
-        <label for="blank">Fill-in-The Blank</label>
-        <input type="radio" id="multiple" class="questionType" name="questionType" value="multiple" onclick="showResForQuestions()">
-        <label for="multiple">Multiple Choice</label>
-        <input type="radio" id="short" class="questionType" name="questionType" value="short" onclick="showResForQuestions()">
-        <label for="short">Short Answer</label>
-      </form>
-
-      <button class="btn btn-orange-add" onclick="insert()">add</button>
-    </div>
-
-    <!-- main area for question and answer -->
-      <div class="main-question" id="mainQuestion">
-        <!-- for original main area -->
-        <div id="originalDiv" class="question-edit-container"> 
-          <div>You selected the original content source below to make a question. To add the content in its plain form, click "add." To make it into another question type, click an option on the left.</div>
-          <div class="question-edit-label">source content</div>
-          <textarea class="question-edit-textarea" type="text" id="originalQ" onkeypress="showPreview(this)" onchange="showPreview(this)" rows="2" cols="50"></textarea>
-          <div class="margin-top-20">Doesn't look right? To return to the sidebar and select other source content, click on the "x".</div>
-        </div>
-
-        <!-- for trueFalse main area -->
-        <div id="trueFalseDiv" class="question-edit-container">
-          <div>To change the statement, toggle between true and false or edit it yourself. To see more options MateriaALL generated, click "other statement options".</div>
-          <div class="more-option-bar">
-          <div class="question-edit-label">statement</div>
-          <div class="more-option-btn" style="text-decoration: underline;" onClick="showTrueFalseOptions()">other statement options</div>
-          </div>
-          <textarea  class="question-edit-textarea" type="text" id="trueFalseQ" onkeypress="showPreview(this)" onchange="showPreview(this)"  rows="2" cols="50"></textarea>
-          <div class="toggle-slider-container">
-            <div class="margin-right-10px">true</div>
-            <label class="switch" for="trueFalseCheckbox">
-              <input type="checkbox" id="trueFalseCheckbox" onchange="toggleTrueFalse()"/>
-              <div class="slider round"></div>
-            </label>
-            <div class="margin-left-10px">false</div>
-          </div>
-          <div class="question-edit-label">answer</div>          
-          <div class="true-false-answer" id="trueFalseA">True</div>
-        </div>
-
-        <!-- for blank main area -->
-        <div id="blankDiv" class="question-edit-container">
-          <div>To change which words to leave blank, click "edit blanks". To create your own question, edit "statement" box.</div>
-          <div class="more-option-bar">
-          <div class="question-edit-label">statement</div>
-          <div class="more-option-btn" style="text-decoration: underline;" onClick="showBlankOptions()">edit blanks</div>
-          </div>
-          <textarea class="question-edit-textarea" type="text" id="blankQ" onkeypress="showPreview(this)" onchange="showPreview(this)"  rows="2" cols="50"></textarea>
-          <div class="question-edit-label">answer</div>
-          <textarea class="question-edit-textarea" type="text" id="blankA" onkeypress="showPreview(this)" onchange="showPreview(this)"  rows="2" cols="50"></textarea>
-          <!-- <div id="blankA"></div> -->
-        </div>
-
-        <!-- for multiple main area -->
-        <div id="multipleDiv" class="question-edit-container">
-          <div>To make word(s) blank, use "edit options". In "edit options", you can also edit your options, or choose options that MateriALL generates.</div>
-          <div class="more-option-bar">
-          <div class="question-edit-label">statement</div>
-          <div class="more-option-btn" style="text-decoration: underline;" onClick="showmultipleOptions()">edit options</div>
-          </div>
-          <textarea class="question-edit-textarea" id="multipleQ" onkeypress="showPreview(this)" onchange="showPreview(this)"  rows="2" cols="50"></textarea>
-          <div class="question-edit-label">options</div>
-          <textarea class="question-edit-textarea" id="multipleO" onkeypress="showPreview(this)" onchange="showPreview(this)"  rows="5" cols="50"></textarea>
-          <!-- <div id="multipleO"></div> -->
-          <div class="question-edit-label">answer</div>
-          <textarea class="question-edit-textarea" id="multipleA" onkeypress="showPreview(this)" onchange="showPreview(this)"  rows="2" cols="50"></textarea>
-          <!-- <div id="multipleA"></div> -->
-        </div>        
-
-        <!-- for short main area -->
-        <div id="shortDiv" class="question-edit-container">
-          <div>To change the question MateriALL generated, edit the question.</div>
-          <div class="question-edit-label">question</div>
-          <textarea class="question-edit-textarea" type="text" id="shortQ" onkeypress="showPreview(this)" onchange="showPreview(this)"  rows="2" cols="50"></textarea>
-          <div class="question-edit-label">answer</div>
-          <textarea class="question-edit-textarea" type="text" id="shortA" onkeypress="showPreview(this)" onchange="showPreview(this)"  rows="5" cols="50"></textarea>       
-        </div>
-
-      </div>
-      </div>
-
-      <!-- preview area -->
-      <div class="preview-container">
-        <img src="https://i.imgur.com/D97YLAT.png" class="preview-decor-left"/>
-        <img src="https://i.imgur.com/NFvNaQr.png" class="preview-decor-right"/>
-        <div class="preview-area">
-          <div class="preview-btns">
-            <form class="preview-btn-form">
-              <input class="preview-btn-show" type="radio" name="showPreview" id="showAnswerKey" onclick="showAnswerKeyPreview()" checked>
-              <label for="showAnswerKey">Answer Key Preview</label>
-              <input class="preview-btn-show" type="radio" name="showPreview" id="showWorksheet" onclick="showWorksheetPreview()">
-              <label for="showWorksheet">Worksheet Preview</label>
-            </form>
-            <div class="tooltip-container tooltip-container-preview">
-              <img class="tooltip tooltip-preview">
-              <span class="tooltiptext tooltiptext-preview">These previews show how your generated content will look once MateriALL has converted them.</span>
-            </div>
-          </div>
-          <div class="preview-content">
-            <div id="worksheetPreview" class="preview-text" style="display: none;"></div>
-            <div id="answerKeyPreview" class="preview-text"></div>
-          </div>
-        </div>
-      </div> 
-
-
-      <!-- small modal for question and answer -->
-      <div id="small-modal-container" class="small-modal-container" style="display: none;">
-        <!-- for trueFalse small modal -->        
-        <div id="trueFalseModal" style="display: none;">
-          <div class="small-modal-header">
-            <div class="small-modal-header-text">
-              <div class="small-modal-header-type">True/False Question</div>
-              <div class="small-modal-header-headline">Auto-Generated Options</div>
-            </div>
-            <img class="small-modal-header-close" onclick="closeModal('trueFalseModal')"/>
-          </div>
-
-          <div class="small-modal-main">
-            <div class="true-false-question-bar">
-              <div class="question-title-bar">
-                <div class="question-title">True Statements</div>
-
-                <div class="tooltip-container tooltip-container-option-generate">
-                  <img class="tooltip tooltip-option-generate">
-                  <span class="tooltiptext tooltiptext-option-generate">MateriALL used AI technology to generate these statements. You can write your own option as well.</span>
-                </div>
-              </div>
-              <div class="toggle-wrapper">
-              <div class="toggle-slider-container">
-                <div class="margin-right-10px">true</div>
-                <label class="switch" for="modalTrueFalseCheckbox">
-                  <input type="checkbox" id="modalTrueFalseCheckbox" onchange="toggleModalTrueFalse()"/>
-                  <div class="slider round"></div>
-                </label>
-                <div class="margin-left-10px">false</div>
-              </div>
-              </div>
-            </div>
-            <div class="margin-bottom-20px">Select the statement for this question, or write your own.</div>
-            <form id="trueFalseOptions" class="options-form"></form>
-          </div>
-        </div>
-
-
-        
-        <!-- for blank small modal -->  
-        <div id="blankModal" style="display: none;">
-          <div class="small-modal-header">
-            <div class="small-modal-header-text">
-              <div class="small-modal-header-type">Fill-In-The Blank Question</div>
-              <div class="small-modal-header-headline">Auto-Generated Options</div>
-            </div>
-            <img class="small-modal-header-close" onclick="closeModal('blankModal')"/>
-          </div>
-          <div class="small-modal-main">
-              <div class="question-title-bar">
-                <div class="question-title">Blanks</div>
-                <div class="tooltip-container tooltip-container-option-generate">
-                  <img class="tooltip tooltip-option-generate">
-                  <span class="tooltiptext tooltiptext-option-generate">MateriALL used AI technology to generate these statements. You can write your own option as well.</span>
-                </div>
-              </div>
-            <div class="margin-bottom-20px">Red, underlined words will be blank once converted. To toggle them blank or not blank, click on words.</div>
-            <form id="blankOptions" class="options-form-sentence"></form>
-          </div>
-        </div>
-
-        <!-- for multiple small modal -->  
-        <div id="multipleModal" style="display: none;">
-          <div class="small-modal-header">
-            <div class="small-modal-header-text">
-              <div class="small-modal-header-type">Multiple Choice Question</div>
-              <div class="small-modal-header-headline">Auto-Generated Options</div>
-            </div>
-            <img class="small-modal-header-close" onclick="closeModal('multipleModal')"/>
-          </div>
-
-          <div class="small-modal-main">
-              <div class="question-title-bar">
-                <div class="question-title">Multiple Choice Options</div>
-                <div class="tooltip-container tooltip-container-option-generate">
-                  <img class="tooltip tooltip-option-generate">
-                  <span class="tooltiptext tooltiptext-option-generate">MateriALL used AI technology to generate these statements. You can write your own option as well.</span>
-                </div>
-              </div>
-            <div class="margin-bottom-20px">Click on words in the sentence below to generate multiple choice options for. Otherwise, you can write your own options. The red, underlined option will be the correct answer.</div>
-            <form id="multipleWords" onchange="showMultipleOptionsInModal()" class="options-form-sentence"></form>
-            <form id="multipleOptions" class="multiple-options-form"></form>
-          </div>
-
-        </div>
-      </div>
-
-  </div>
-  </body>
-  
+</body>
 </html>
-
-

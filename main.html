@@ -58,8 +58,8 @@
     }
 
     function saveCheckedItems() {
-      var checkedTextArr = Array.from(document.querySelectorAll("input[class='textOption']:checked")).map((elem) => elem.value);
-      var checkedText = checkedTextArr.join(" ").toLowerCase();
+      var checkedTextArr = Array.from(document.querySelectorAll("input[class='textOption']:checked")).map((elem) => elem.value.replace(/\s+/g,' ').trim());
+      var checkedText = checkedTextArr.join(" ");
       var checkedImgUrl = Array.from(document.querySelectorAll("input[class='imgOption']:checked")).map((elem) => elem.value);
       
       google.script.run.withSuccessHandler(showModal)
